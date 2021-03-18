@@ -1,0 +1,24 @@
+1. Change connection string in appsettings.json
+update data source with your local/remote sql server name
+
+2. run following command from your packate manager console to create database and entities.
+add-migration migrationName
+update-database
+
+3. open ssms and connect to local/remote sql server mentioned in step 1
+run following queries against database Bell to create serviceCategoryType and ServiceCategories.
+
+Use Bell;
+Go
+insert into [dbo].serviceCategoryTypes (ServiceCategoryTypeName) values ('Residential'); 
+insert into [dbo].serviceCategoryTypes (ServiceCategoryTypeName) values ('Business');
+
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('T.V.',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Home Internet',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Home Phone',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Home Security',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Business Internet',2);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Business Phone',2);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Mobile Phone',2);
+
+Now you can run the application and register your user to log in.
