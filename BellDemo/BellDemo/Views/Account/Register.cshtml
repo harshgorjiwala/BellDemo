@@ -1,4 +1,5 @@
-﻿@model BellDemo.ViewModels.RegisterViewModel
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@model BellDemo.ViewModels.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -7,17 +8,17 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form method="post">
-            @if (Html.ViewData.ModelState.ErrorCount > 0)
-            {
-                <div class="alert alert-danger" asp-validation-summary="All" role="alert">
-                </div>
-            }
+        <form id="register" method="post">
+            
+            @*I am using validation summary in login page so doing custom validation on this page*@
+            <div id="customvalidation" style="visibility: hidden" class="alert alert-danger" asp-validation-summary="All" role="alert">
+                
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="FirstName"></label>
-                        <input asp-for="FirstName" class="form-control" />
+                        <input asp-for="FirstName" class="form-control" required />
                         <span asp-validation-for="FirstName" class="text-danger"></span>
                     </div>
 
@@ -25,7 +26,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="LastName"></label>
-                        <input asp-for="LastName" class="form-control" />
+                        <input asp-for="LastName" class="form-control" required />
                         <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
 
@@ -33,27 +34,27 @@
             </div>
             <div class="form-group">
                 <label asp-for="Email"></label>
-                <input asp-for="Email" type="email" class="form-control" />
+                <input asp-for="Email" type="email" class="form-control" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="Password"></label>
-                        <input asp-for="Password" class="form-control" />
+                        <input asp-for="Password" class="form-control" required />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="ConfirmPassword"></label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <input asp-for="ConfirmPassword" class="form-control" required />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                <button type="submit" id="submit" class="btn btn-primary btn-block" onclick="regi()">Register</button>
+                <button type="submit" id="submit" class="btn btn-primary btn-block">Register</button>
             </div>
         </form>
 
@@ -61,13 +62,45 @@
 </div>
 
 @section Scripts {
-        <script type="text/javascript">
-            function regi() {
-                swal({
-                    title: "Good job!",
-                    text: "You are successfully register!",
-                    icon: "success",
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-ajax-unobtrusive@3.2.4/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript">
+
+        //todo validation can be done here to avoid API call like password compare
+        $('form#register').on('submit',
+            function(e) {
+                let self = this;
+                e.preventDefault();
+                var postUrl = "@Url.Action("Register", "Account", new {Area = ""})";
+                $.ajax({
+                    type: "POST", //HTTP POST Method
+                    url: postUrl, // Controller/View
+                    data: $(self).serialize(),
+                    success: function (result) {
+
+                        if (!result.success) {
+
+                            //display custom validation
+                            document.getElementById("customvalidation").style.visibility = "visible";
+
+                            for (var key in result.errors) {
+                                if (Object.prototype.hasOwnProperty.call(result.errors, key)) {
+                                    $('#customvalidation').append(result.errors[key] + '<br />');
+                                }
+                            }
+                        } else {                            
+                            swal({
+                                title: "Good job!",
+                                text: "You are successfully register!",
+                                icon: "success"
+                            });
+
+                            setTimeout(function () {
+                                window.location.href = result.redirectToUrl;
+                            }, 3000);
+                        }
+                    }
                 });
-            };
-        </script>
-    }
+            });
+    </script>
+}

@@ -269,6 +269,48 @@ namespace BellDemo.Migrations
                 name: "IX_WorkFlows_ServiceCategoryTypeID",
                 table: "WorkFlows",
                 column: "ServiceCategoryTypeID");
+
+            migrationBuilder.Sql(@"
+BEGIN TRANSACTION;  
+
+BEGIN TRY  
+	--
+	--INSERT User Claim
+	-- 
+-- Use Bell;
+-- Go
+insert into [dbo].serviceCategoryTypes (ServiceCategoryTypeName) values ('Residential'); 
+insert into [dbo].serviceCategoryTypes (ServiceCategoryTypeName) values ('Business');
+
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('T.V.',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Home Internet',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Home Phone',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Home Security',1);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Business Internet',2);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Business Phone',2);
+insert into [dbo].[ServiceCategories] (ServiceCategoryName, ServiceCategoryTypeID) values ('Mobile Phone',2);	
+
+
+END TRY  
+BEGIN CATCH  
+    SELECT   
+        ERROR_NUMBER() AS ErrorNumber  
+        ,ERROR_SEVERITY() AS ErrorSeverity  
+        ,ERROR_STATE() AS ErrorState  
+        ,ERROR_PROCEDURE() AS ErrorProcedure  
+        ,ERROR_LINE() AS ErrorLine  
+        ,ERROR_MESSAGE() AS ErrorMessage;  
+
+    IF @@TRANCOUNT > 0  
+        ROLLBACK TRANSACTION;
+		
+	PRINT 'Transaction failed'  
+END CATCH;  
+
+IF @@TRANCOUNT > 0  
+    COMMIT TRANSACTION;  
+	PRINT 'Transaction completed successfully'
+GO ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

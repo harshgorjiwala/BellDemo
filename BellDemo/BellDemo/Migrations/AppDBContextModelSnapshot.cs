@@ -297,7 +297,7 @@ namespace BellDemo.Migrations
                         .WithMany()
                         .HasForeignKey("ServiceCategoryTypeID");
 
-                    b.Navigation("ServiceCategoryTypeId");
+                    b.Navigation("ServiceCategoryType");
                 });
 
             modelBuilder.Entity("BellDemo.Data.WorkFlow", b =>

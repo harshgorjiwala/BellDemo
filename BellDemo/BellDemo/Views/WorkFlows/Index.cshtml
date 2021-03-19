@@ -1,109 +1,44 @@
-﻿@model IEnumerable<BellDemo.Data.WorkFlow>
+﻿
+@using BellDemo.Data
+@model IEnumerable<BellDemo.Data.WorkFlow>
 
 @{ ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml"; }
 
-<h1>Work Flow Data</h1>
+<h1>Work Orders</h1>
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ServiceCategoryType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ServiceCategory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WorkGiven)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th><a data-target="#AddWorkflow" data-toggle="modal" class="btn btn-outline-success"><i class="fa fa-plus-square"></i> Work Flow</a></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.ServiceCategoryType.ServiceCategoryTypeName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.ServiceCategory.ServiceCategoryName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.WorkGiven)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Location)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Date)
-    </td>
-    <td>
-        <a asp-action="AddOrEdit" asp-route-id="@item.WorkFLowID"><i class="fa fa-marker fa-lg"></i></a> |
-        <a asp-action="Delete" asp-route-id="@item.WorkFLowID" class="text-danger ml-l" onclick="return deleteW(this)"><i class="fa fa-trash-alt"></i></a>
-    </td>
-</tr>}
-    </tbody>
-</table>
+@if (Model.Any())
+{
+    @(await @Html.PartialAsync("List", @Model))
+}
+else
+{
+    
+    <div>
+        No Data found Please click below button to add new work oder
+    </div>
+    <br/>
+    <a data-target="#AddWorkflow" data-toggle="modal" class="btn btn-outline-success"><i class="fa fa-plus-square"></i> Work Order</a>
+}
 
 <div class="modal fade" id="AddWorkflow" tabindex="-1" role="dialog" aria-labelledby="AddWorkflowLabel" aria-hidden="true">
     <div class="modal-dialog">
+        @{
+            var data = (WorkFlow)@ViewBag.workorder;
+        }
+
         <form id="addWF" method="post" class="form form-inline " role="form">
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">Add WorkFlow</h4>
+                    <h4 class="modal-title" id="myModalLabel">Add Work Order</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
 
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group required row m-b-15">
-                                <label class="col-md-5 text-right">Service Type</label>
-                                <div class="col-md-7 pb-2">
-                                    <select id="serviceCategoryType" class="form-control" name="ServiceCategoryTypeID" required>
-                                        <option value="1" selected>Residential</option>
-                                        <option value="2">Business</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group required row m-b-15">
-                                <label class="col-md-5 col-form-label text-right">Service Category</label>
-                                <div class="col-md-7 pb-2">
-                                    <select id="serviceCategory" class="form-control" name="ServiceCategoryId" required>
-                                        <option value="1" selected>T.V.</option>
-                                        <option value="2">Home Internet</option>
-                                        <option value="3">Home Phone</option>
-                                        <option value="4">Home Security</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row m-b-15">
-                                <label class="col-md-5 col-form-label text-right">Name</label>
-                                <div class="col-md-7 pb-2">
-                                    <input type="text" id="Name" name="WorkGiven" class="form-control" placeholder="Customer Name" required />
-                                </div>
-                            </div>
-                            <div class="form-group row m-b-15">
-                                <label class="col-md-5 col-form-label text-right">Location</label>
-                                <div class="col-md-7 pb-2">
-                                    <input type="text" id="AddLocation" name="Location" class="form-control" placeholder="Location" required />
-                                </div>
-                            </div>
-                            <div class="form-group row m-b-15">
-                                <label class="col-md-5 col-form-label text-right">Service Date</label>
-                                <div class="col-md-7 pb-2">
-                                    <input type="date" id="ServiceDate" name="Date" class="form-control" placeholder="ServiceDate" required />
-                                </div>
-                            </div>
+                            @await Html.PartialAsync("AddEditForm", data)
                         </div>
                     </div>
                 </div>
@@ -119,52 +54,71 @@
                             <b>&nbsp;Save&nbsp;</b>
                         </button>
                     </div>
-
                 </div>
-
-
-            </div><!-- /.modal-content -->
+            </div>
         </form>
     </div><!-- /.modal-dialog -->
 </div>
 
 @section Scripts{
     <script type="text/javascript">
-        $('form#addWF').on('submit', function (e) {
-            let self = this;
-            e.preventDefault();
 
-            var postUrl = "@Url.Action("AddOrEdit", "WorkFlows", new {Area = ""})";
 
-            $.ajax({
-                type: "POST", //HTTP POST Method
-                url: postUrl, // Controller/View
-                data: $(self).serialize(),
-                success: function () {
-                    location.reload();
+        $(document).ready(function() {
+
+            $("#ServiceCategoryTypeID").change(function() {
+
+
+                $("#ServiceCategoryId").empty();
+
+                if ($("#ServiceCategoryTypeID").val()) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetCategory")',
+                        dataType: 'json',
+                        data: { id: $("#ServiceCategoryTypeID").val() },
+                        success: function(categories) {
+                            $("#ServiceCategoryId").append('<option></option>');
+                            $.each(categories,
+                                function(i, category) {
+                                    $("#ServiceCategoryId").append('<option value="' + category.value + '">' + category.text + '</option>');
+                                });
+                        },
+                        error: function(ex) {
+                            alert('Failed to retrieve category.' + ex);
+                        }
+                    });
                 }
             });
-        });
 
-        $('#serviceCategoryType').on('change', function (e) {
-            let self = this;
-            let serviceCategory = $('#serviceCategory');
-
-            let residentialCategoryOptions = `<option value="1" selected>T.V.</option>
-                                       <option value = "2" > Home Internet</option>
-                                       <option value="3">Home Phone</option>
-                                       <option value="4">Home Security</option>`;
-
-            let businessCategoryOptions = `<option value="5" selected>Business Internet</option>
-                                            <option value="6">Business Phone</option>
-                                            <option value="7">Mobile Phone</option>`;
-
-            if ($(self).val() === '1') {
-                serviceCategory.empty().append(residentialCategoryOptions);
-            } else {
-                serviceCategory.empty().append(businessCategoryOptions);
+            //todo can be converted to strongly typed 
+            if ('@ViewBag.newlogin' === 'True') {
+                swal({
+                    title: "Good job!",
+                    text: "You are logedIn now!",
+                    icon: "success"
+                });
             }
         });
+
+
+        $('form#addWF').on('submit',
+            function(e) {
+                let self = this;
+                e.preventDefault();
+
+                var postUrl = "@Url.Action("AddOrEdit", "WorkFlows", new {Area = ""})";
+
+                $.ajax({
+                    type: "POST", //HTTP POST Method
+                    url: postUrl, // Controller/View
+                    data: $(self).serialize(),
+                    success: function() {
+                        location.reload();
+                    }
+                });
+            });
+
         function deleteW(btnDelete) {
             if (btnDelete.dataset.confirmed) {
                 // The action was already confirmed by the user, proceed with server event
@@ -174,23 +128,27 @@
                 // Ask the user to confirm/cancel the action
                 event.preventDefault();
                 swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this imaginary file!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                    .then(function () {
-                        // Set data-confirmed attribute to indicate that the action was confirmed
-                        btnDelete.dataset.confirmed = true;
-                        swal("Poof! Deleted Successfully    !", {
-                            icon: "success",
-                        });
-                        // Trigger button click programmatically
-                        btnDelete.click();
-                    }).catch(function (reason) {
+                        title: "Are you sure?",
+                        text: "Once deleted, you will not be able to recover this order!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true
+                    })
+                    .then(function(data) {
+                        if (data) {
+                            // Set data-confirmed attribute to indicate that the action was confirmed
+                            btnDelete.dataset.confirmed = true;
+                            // Trigger button click programmatically
+                            btnDelete.click();
+                            swal("Poof! Deleted Successfully    !",
+                                {
+                                    icon: "success"
+                                });
+                        }
+
+                    }).catch(function(reason) {
                         // The action was canceled by the user
-                        return false
+                        return false;
                     });
             }
         }

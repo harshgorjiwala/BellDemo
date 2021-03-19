@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BellDemo.Controllers
 {
@@ -22,9 +23,24 @@ namespace BellDemo.Controllers
         }
 
         // GET: WorkFlows
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool newlogin = false)
         {
+            ViewBag.newlogin = newlogin;
+
             var list = await _context.WorkFlows.ToListAsync();
+
+            var flow = new WorkFlow
+            {
+                ServiceCategoryTypes = _context.serviceCategoryTypes.Select(a => new SelectListItem()
+                {
+                    Text = a.ServiceCategoryTypeName,
+                    Value = a.ServiceCategoryTypeID.ToString()
+                }).ToList(),
+                ServiceCategories = new List<SelectListItem>()
+            };
+            flow.Date = null;
+
+            ViewBag.workorder = flow;
             return View(list);
         }
 
@@ -32,9 +48,38 @@ namespace BellDemo.Controllers
         public IActionResult AddOrEdit(int id = 0)
         {
             if (id == 0)
-                return View(new WorkFlow());
+            {
+                var flow = new WorkFlow
+                {
+                    ServiceCategoryTypes = _context.serviceCategoryTypes.Select(a => new SelectListItem()
+                    {
+                        Text = a.ServiceCategoryTypeName, Value = a.ServiceCategoryTypeID.ToString()
+                    }).ToList(),
+                    ServiceCategories = new List<SelectListItem>()
+                };
+
+                return View(flow);
+            }
+
             else
-                return View(_context.WorkFlows.Find(id));
+            {
+                var flow = _context.WorkFlows.Find(id);
+
+                flow.ServiceCategoryTypes = _context.serviceCategoryTypes.Select(a => new SelectListItem()
+                {
+                    Text = a.ServiceCategoryTypeName,
+                    Value = a.ServiceCategoryTypeID.ToString()
+                }).ToList();
+
+                flow.ServiceCategories = _context.ServiceCategories
+                    .Where(a => a.ServiceCategoryType.ServiceCategoryTypeID == flow.ServiceCategoryTypeID).Select(a => new SelectListItem()
+                    {
+                        Text = a.ServiceCategoryName,
+                        Value = a.ServiceCategoryId.ToString()
+                    }).ToList();
+
+                return View(flow);
+            }
         }
 
         // POST: WorkFlows/Create
@@ -60,7 +105,26 @@ namespace BellDemo.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(workFlow);
+            else
+            {
+                workFlow.ServiceCategoryTypes = _context.serviceCategoryTypes.Select(a => new SelectListItem()
+                {
+                    Text = a.ServiceCategoryTypeName,
+                    Value = a.ServiceCategoryTypeID.ToString()
+                }).ToList();
+
+                workFlow.ServiceCategories = workFlow.WorkFLowID > 0
+                    ? _context.ServiceCategories
+                        .Where(a => a.ServiceCategoryType.ServiceCategoryTypeID == workFlow.ServiceCategoryTypeID)
+                        .Select(a => new SelectListItem()
+                        {
+                            Text = a.ServiceCategoryName,
+                            Value = a.ServiceCategoryId.ToString()
+                        }).ToList()
+                    : new List<SelectListItem>();
+
+                return View(workFlow);
+            }
         }
 
         // GET: WorkFlows/Delete/5
@@ -70,6 +134,13 @@ namespace BellDemo.Controllers
             _context.WorkFlows.Remove(workflow);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        //this will return categories depends on category type
+        [HttpPost]
+        public JsonResult GetCategory(int id)
+        {
+            return Json(new SelectList(_context.ServiceCategories.Where(a => (a.ServiceCategoryType.ServiceCategoryTypeID == id)), "ServiceCategoryId", "ServiceCategoryName"));
         }
     }
 }

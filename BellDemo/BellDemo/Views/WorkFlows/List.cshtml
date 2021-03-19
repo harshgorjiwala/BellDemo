@@ -1,0 +1,50 @@
+﻿@model System.Collections.Generic.IEnumerable<BellDemo.Data.WorkFlow>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceCategoryType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceCategory)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkGiven)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th><a data-target="#AddWorkflow" data-toggle="modal" class="btn btn-outline-success"><i class="fa fa-plus-square"></i> Work Order</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceCategoryType.ServiceCategoryTypeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceCategory.ServiceCategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkGiven)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    <a asp-action="AddOrEdit" asp-route-id="@item.WorkFLowID"><i class="fa fa-marker fa-lg"></i></a> |
+                    <a asp-action="Delete" asp-route-id="@item.WorkFLowID" class="text-danger ml-l" onclick="return deleteW(this)"><i class="fa fa-trash-alt"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

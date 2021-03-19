@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form method="post">
+        <form id="login" method="post">
             @if (Html.ViewData.ModelState.ErrorCount > 0)
             {
                 <div class="alert alert-danger" asp-validation-summary="All" role="alert">
@@ -15,13 +15,13 @@
             }
             <div class="form-group">
                 <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
+                <input asp-for="Password" class="form-control" required />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
@@ -32,7 +32,8 @@
                 </div>
 
             </div>
-            <button type="submit" class="btn btn-primary" onclick="login()">Login</button>
+            <button type="submit" class="btn btn-primary">Login</button> &nbsp;&nbsp;&nbsp;
+            <a class="" asp-area="" asp-controller="Account" asp-action="ForgetPassword">Forget Password</a>
         </form>
 
     </div>
@@ -40,12 +41,16 @@
 
 @section Scripts {
     <script type="text/javascript">
-            function login() {
+        $(document).ready(function() {
+
+            //todo can be converted to strongly typed
+            if ('@ViewBag.reset' === 'True') {
                 swal({
                     title: "Good job!",
-                    text: "You are logedIn now!",
-                    icon: "success",
+                    text: "Password reset successfully!",
+                    icon: "success"
                 });
-            };
+            }
+        });
     </script>
 }

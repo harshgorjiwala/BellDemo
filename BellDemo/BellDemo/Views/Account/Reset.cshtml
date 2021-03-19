@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@model ResetModel
+@{
+    ViewData["Title"] = "Reset Password";
+}
+
+
+<h1>Reset Password</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            @if (Html.ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-danger" asp-validation-summary="All" role="alert">
+                </div>
+            }
+            <input type="hidden" asp-for="Guid" />
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="CurrentPassword"></label>
+                        <input asp-for="CurrentPassword" class="form-control" required />
+                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" class="form-control" required />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" required />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        
+    </script>
+}

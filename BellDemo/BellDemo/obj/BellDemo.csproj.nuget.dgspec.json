@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\New folder\\BellDemo\\BellDemo\\BellDemo.csproj": {}
+    "F:\\BBM\\Bell\\BellDemo\\BellDemo\\BellDemo.csproj": {}
   },
   "projects": {
-    "F:\\New folder\\BellDemo\\BellDemo\\BellDemo.csproj": {
+    "F:\\BBM\\Bell\\BellDemo\\BellDemo\\BellDemo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\New folder\\BellDemo\\BellDemo\\BellDemo.csproj",
+        "projectUniqueName": "F:\\BBM\\Bell\\BellDemo\\BellDemo\\BellDemo.csproj",
         "projectName": "BellDemo",
-        "projectPath": "F:\\New folder\\BellDemo\\BellDemo\\BellDemo.csproj",
+        "projectPath": "F:\\BBM\\Bell\\BellDemo\\BellDemo\\BellDemo.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "F:\\New folder\\BellDemo\\BellDemo\\obj\\",
+        "outputPath": "F:\\BBM\\Bell\\BellDemo\\BellDemo\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -70,6 +70,10 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[3.1.5, )"
+            },
+            "SendGrid": {
+              "target": "Package",
+              "version": "[9.22.0, )"
             }
           },
           "imports": [

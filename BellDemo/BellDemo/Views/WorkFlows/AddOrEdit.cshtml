@@ -3,42 +3,16 @@
 @{ ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml"; }
 
-<h4>WorkFlow Form</h4>
+<h4>Work Order Form</h4>
 <hr />
 <div class="row">
-
     <div class="col-md-6">
         <form asp-action="AddOrEdit">
-
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="WorkFLowID" />
-            <div class="form-group">
-                <label asp-for="ServiceCategoryType" class="control-label"></label>
-                <select id="serviceCategoryType" class="form-control" name="ServiceCategoryTypeID" required>
-                </select>
-                <span asp-validation-for="ServiceCategoryType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ServiceCategory" class="control-label"></label>
-                <select id="serviceCategory" class="form-control" name="ServiceCategoryId" required>
-                </select>
-                <span asp-validation-for="ServiceCategory" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WorkGiven" class="control-label"></label>
-                <input asp-for="WorkGiven" class="form-control" />
-                <span asp-validation-for="WorkGiven" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
+
+            @await Html.PartialAsync("AddEditForm", @Model)
+
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <input type="submit" value="Submit" class="btn btn-primary btn-block" />
@@ -52,57 +26,37 @@
     </div>
 </div>
 
-
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script type="text/javascript">
-        let selectedServiceCategoryId = '@Model.ServiceCategoryId';
-        let selectedServiceCategoryTypeId = '@Model.ServiceCategoryTypeID';
-        console.log(selectedServiceCategoryId);
-        console.log(selectedServiceCategoryTypeId);
 
-        let serviceCategoryTypeOptions = `<option value="1">Residential</option>
-                                          <option value = "2">Business</option>`;
+        $(document).ready(function() {
 
-        let residentialCategoryOptions = `<option value="1">T.V.</option>
-                                          <option value = "2"> Home Internet</option>
-                                          <option value="3">Home Phone</option>
-                                          <option value="4">Home Security</option>`;
+            $("#ServiceCategoryTypeID").change(function() {
 
-        let businessCategoryOptions = `<option value="5">Business Internet</option>
-                                       <option value="6">Business Phone</option>
-                                       <option value="7">Mobile Phone</option>`;
 
-        $(document).ready(function () {
-            if (selectedServiceCategoryTypeId === '1') {
+                $("#ServiceCategoryId").empty();
 
-                $('#serviceCategoryType').empty().append(serviceCategoryTypeOptions);
-                $('#serviceCategoryType').val(selectedServiceCategoryTypeId).change();
-
-                $('#serviceCategory').empty().append(residentialCategoryOptions);
-                $('#serviceCategory').val(selectedServiceCategoryId).change();
-
-            } else if (selectedServiceCategoryTypeId === '2') {
-                console.log(123123)
-                $('#serviceCategoryType').empty().append(serviceCategoryTypeOptions);
-                $('#serviceCategoryType').val(selectedServiceCategoryTypeId).change();
-
-                $('#serviceCategory').empty().append(businessCategoryOptions);
-                $('#serviceCategory').val(selectedServiceCategoryId).change();
-            }
-        });
-
-        $('#serviceCategoryType').on('change', function (e) {
-            let self = this;
-            let serviceCategory = $('#serviceCategory');
-
-            if ($(self).val() === '1') {
-                serviceCategory.empty().append(residentialCategoryOptions);
-            } else {
-                serviceCategory.empty().append(businessCategoryOptions);
-            }
+                if ($("#ServiceCategoryTypeID").val()) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetCategory")',
+                        dataType: 'json',
+                        data: { id: $("#ServiceCategoryTypeID").val() },
+                        success: function(categories) {
+                            $("#ServiceCategoryId").append('<option></option>');
+                            $.each(categories,
+                                function(i, category) {
+                                    $("#ServiceCategoryId").append('<option value="' + category.value + '">' + category.text + '</option>');
+                                });
+                        },
+                        error: function(ex) {
+                            alert('Failed to retrieve category.' + ex);
+                        }
+                    });
+                }
+            });
         });
     </script>
 }

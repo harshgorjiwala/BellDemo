@@ -14,7 +14,7 @@ namespace BellDemo.Data
         [Required]
         public string ServiceCategoryName { get; set; }
         
-        public virtual ServiceCategoryType ServiceCategoryTypeId { get; set; }
+        public virtual ServiceCategoryType ServiceCategoryType { get; set; }
 
         public virtual ICollection<WorkFlow> WorkFlows { get; set; }
     }
